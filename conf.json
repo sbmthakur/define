@@ -1,0 +1,8 @@
+{
+    "baseUrl": "https://od-api.oxforddictionaries.com/api/v1/entries/en/",
+    "appHeaders": {
+        "key":  "xxxx",
+        "id": "xxxx"
+    },
+    "proxy": "" 
+}
