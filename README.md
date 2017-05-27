@@ -1,0 +1,22 @@
+# define
+
+Fetch a word's meaning and usage through Oxford Dictionaries API.
+
+## Getting Started
+
+### Prerequisites
+
+Oxford Dictionary API key: Register on [Oxford Dictionaries API site](https://developer.oxforddictionaries.com/) and generate your keys. You will be provided with `id` and `key` which you need to put in `conf.json`. 
+
+### Installing
+
+Run the following command after downloading or cloning this repo:
+
+```
+npm install -g
+```
+This will install dependencies and will link the script to our project's location. Now we can use `define` like any other shell command.
+
+For any further hacking it's convenient to run `npm link` once. This will create a symlink to our `index.js`.
+
+Please report any issues that you may encounter. Suggestions are welcome.
