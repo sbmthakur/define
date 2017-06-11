@@ -14,7 +14,7 @@ const options = {
    };
 
 const print = function(someString, result){ 
-    return console.log("\n" + someString, result);
+    return console.log("\n" + someString, result || '');
 };
 
 request(options, function (error, response, body) {
@@ -22,7 +22,13 @@ request(options, function (error, response, body) {
      const wordData = JSON.parse(body); 
      print("You asked for: ", word);
      print("Meaning: ", JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses[0].definitions[0]);
-     print("Example: ", JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses[0].examples[0].text);
+     try{
+     
+        print("Example: ", JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses[0].examples[0].text);
+     }
+     catch(e){
+       print("Couldn't find any example.");
+     }
      requestSynsAnts(word, (err, wordData) => {
 
        print("Synonyms: ", wordData.synonyms.replace(/, $/,''));
