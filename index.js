@@ -21,6 +21,7 @@ request(options, function (error, response, body) {
   if (error) throw new Error(error);
      const wordData = JSON.parse(body); 
      print("You asked for: ", word);
+     print(JSON.parse(body).results[0].lexicalEntries[0].lexicalCategory);
      print("Meaning: ", JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses[0].definitions[0]);
      try{
      
