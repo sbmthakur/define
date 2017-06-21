@@ -3,39 +3,114 @@
 const request = require("request");
 const config = require("./conf.json");
 const word = process.argv[2]; 
-const options = { 
-  "method": "GET",
-  "url": config.baseUrl + word,
-  "headers": { 
-     "app_key": config.appHeaders.key,
-     "app_id": config.appHeaders.id 
-   },
-  "proxy": config.proxy
-   };
 
 const print = function(someString, result){ 
     return console.log("\n" + someString, result || '');
 };
+const Redis = require("redis");
+const redis = Redis.createClient();
+const meaning = require("./balk_meaning.json")
+const syn_ant = require("./balk_syn_ant.json")
 
-request(options, function (error, response, body) {
-  if (error) throw new Error(error);
-     const wordData = JSON.parse(body); 
-     print("You asked for: ", word);
-     print(JSON.parse(body).results[0].lexicalEntries[0].lexicalCategory);
-     print("Meaning: ", JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses[0].definitions[0]);
-     try{
-     
-        print("Example: ", JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses[0].examples[0].text);
-     }
-     catch(e){
-       print("Couldn't find any example.");
-     }
-     requestSynsAnts(word, (err, wordData) => {
+wordExistsRedis(word, (error, result) => {
+   if(error){
+        
+   }
+   else{
+       if(result === null){
+           requestWordInfo(word); 
+       }
+       else{
+//lol
+         const wordData = JSON.parse(result).results[0].lexicalEntries; 
+         print("You asked for: ", word);
+         wordData.map(wordInfo => {
+         print(wordInfo.lexicalCategory);
+         print("Meaning: ", wordInfo.entries[0].senses[0].definitions[0]);
+         try{
+         
+            print("Example: ", wordInfo.entries[0].senses[0].examples[0].text);
+         }
+         catch(e){
+           print("Couldn't find any example.");
+         }
+         //redisData[wordInfo.lexicalCategory.toLowerCase()] = JSON.stringify(wordInfo);
 
-       print("Synonyms: ", wordData.synonyms.replace(/, $/,''));
-       print("Antonyms: ", wordData.antonyms.replace(/, $/,''));
-     }); 
+         });
+       }
+   }
 });
+
+function wordExistsRedis(word, callback){
+    redis.hgetall(word, (err, res) => {
+        if(err){
+            callback(err, null);
+        }
+        else{
+            callback(null, res);
+        }
+    });    
+}
+
+function requestWordInfo(word){
+
+    const options = { 
+      "method": "GET",
+      "url": config.baseUrl + word,
+      "headers": { 
+         "app_key": config.appHeaders.key,
+         "app_id": config.appHeaders.id 
+       },
+      "proxy": config.proxy
+    };
+    request(options, function (error, response, body) {
+      if (error) throw new Error(error);
+         const wordData = JSON.parse(body).results[0].lexicalEntries; 
+         let redisData = JSON.parse(body);
+         print("You asked for: ", word);
+         wordData.map(wordInfo => {
+         print(wordInfo.lexicalCategory);
+         print("Meaning: ", wordInfo.entries[0].senses[0].definitions[0]);
+         try{
+         
+            print("Example: ", wordInfo.entries[0].senses[0].examples[0].text);
+         }
+         catch(e){
+           print("Couldn't find any example.");
+         }
+         //redisData[wordInfo.lexicalCategory.toLowerCase()] = JSON.stringify(wordInfo);
+
+         });
+          /* storeDataRedis(word + "::info", redisData, (err, res) => {
+               if(err){
+               
+               }
+               else{
+                   console.log(res,"Stored this word's info in redis"); 
+               }
+           });*/
+         requestSynsAnts(word, (err, wordData) => {
+    
+//           let redisExtra = {};
+           let synonyms = wordData.synonyms.replace(/, $/,'');
+           let antonyms = wordData.antonyms.replace(/, $/,''); 
+           print("Synonyms: ", synonyms);
+           print("Antonyms: ", antonyms);
+           redisData["synonyms"] = synonyms;
+           redisData["antonyms"] = antonyms;
+         //  storeDataRedis(word + "::extrastuff", redisExtra, (err, res) => {
+           storeDataRedis(word, JSON.stringify(redisData), (err, res) => {
+               if(err){
+               
+               }
+               else{
+                   console.log(res,"Stored this word's extra stuff in redis"); 
+                   redis.quit();
+               }
+           });
+         }); 
+    });
+}
 
 function requestSynsAnts(word, callback){
 
@@ -79,3 +154,27 @@ function requestSynsAnts(word, callback){
        return callback(null, wordData);
     });
 }
+
+function storeDataRedis(wordKey, redisData, callback){
+
+    redis.hmset(wordKey, redisData, (err, res) => {
+    
+        if(err){
+            callback(err, null);    
+        }
+        else{
+            callback(null, res); 
+        }
+    });    
+}
+
+function printWordData(wordData){
+
+
+}
+/*
+//redis.hexists(word,'sdfdf',(e,r) => {console.log(e, r)})
+//console.log(redis.hexists(word,'verb'))
+
+*/
+
