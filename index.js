@@ -57,8 +57,7 @@ function requestWordInfo(word){
       "headers": { 
          "app_key": config.appHeaders.key,
          "app_id": config.appHeaders.id 
-       },
-      "proxy": config.proxy
+       }
     };
     request(options, function (error, response, body) {
       if (error) throw new Error(error);
@@ -68,7 +67,7 @@ function requestWordInfo(word){
           if (response.statusCode === 404)
               return print("This word doesn't exist in oxford dictionary"); 
           else
-              return print("Some probelem with API server"); 
+              return print("Some problem with API server"); 
       }
         let redisData = JSON.parse(body); 
         printWordData(redisData, () => {
@@ -103,36 +102,52 @@ function requestSynsAnts(word, callback){
      "headers": { 
         "app_key": config.appHeaders.key,
         "app_id": config.appHeaders.id 
-      },
-     "proxy": config.proxy
+      }
     };
     print("Fetching synonyms and antonyms","...."); 
     request(options, function (error, response, body) {
 
-        const senses = JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses;
         let synonyms = "";
         let antonyms = "";
-        for(let sense of senses){
+        if (response.statusCode !== 200) {
+         
+          //404 is handled below with an 'or' operator when 'wordData' variable is assigned
 
-            if(sense.hasOwnProperty("synonyms")){
-            
-              sense["synonyms"].map(synonym => {
-                      
-                  synonyms += synonym.text + ", ";
-              }); 
-            }
-            if(sense.hasOwnProperty("antonyms")){
-            
-              sense["antonyms"].map(antonym => {
-                      
-                  antonyms += antonym.text + ", ";
-              }); 
+          if (response.statusCode >= 500){
+          
+              print("Some problem with API server. Please request the word when the server is up."); 
+              process.exit();
+          }
+
+        }
+        else {
+
+            const senses = JSON.parse(body).results[0].lexicalEntries[0].entries[0].senses;
+            for(let sense of senses){
+
+                if(sense.hasOwnProperty("synonyms")){
+                
+                  sense["synonyms"].map(synonym => {
+                          
+                      synonyms += synonym.text + ", ";
+                  }); 
+                }
+                if(sense.hasOwnProperty("antonyms")){
+                
+                  sense["antonyms"].map(antonym => {
+                          
+                      antonyms += antonym.text + ", ";
+                  }); 
+                }
             }
         }
 
         const wordData = {
-            "synonyms": synonyms, 
-            "antonyms": antonyms
+                
+            //In case synonyms and/or antonyms don't exist in the dictionary for the given word
+
+            "synonyms": synonyms || "none", 
+            "antonyms": antonyms || "none"
         }
        return callback(null, wordData);
     });
