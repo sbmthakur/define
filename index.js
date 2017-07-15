@@ -2,11 +2,18 @@
 
 const request = require("request");
 const config = require("./conf.json");
-const word = process.argv[2]; 
-
 const print = function(someString, result){ 
     return console.log("\n" + someString, result || '');
 };
+
+const word = process.argv[2];
+
+if(!word) {
+
+    print("Please enter an english word as the first argument");
+    return;
+}
+
 const Redis = require("redis");
 const redis = Redis.createClient();
 

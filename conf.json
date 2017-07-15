@@ -3,6 +3,5 @@
     "appHeaders": {
         "key":  "xxxx",
         "id": "xxxx"
-    },
-    "proxy": "" 
+    }
 }
