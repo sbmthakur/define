@@ -39,7 +39,8 @@ wordExistsRedis(word, (error, result) => {
 });
 
 function wordExistsRedis(word, callback){
-    redis.get(word, (err, res) => {
+    let wordKey = "word:" + word; 
+    redis.get(wordKey, (err, res) => {
         if(err){
             callback(err, null);
         }
@@ -153,8 +154,8 @@ function requestSynsAnts(word, callback){
     });
 }
 
-function storeDataRedis(wordKey, redisData, callback){
-
+function storeDataRedis(word, redisData, callback){
+    let wordKey = "word:" + word; 
     redis.set(wordKey, redisData, (err, res) => {
     
         if(err){
