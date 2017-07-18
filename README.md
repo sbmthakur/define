@@ -1,6 +1,6 @@
 # define
 
-Fetch a word's meaning and usage through Oxford Dictionaries API.
+Fetch a word's meaning and usage through Oxford Dictionaries API. Once fetched, the word data is stored in redis and future queries for the same word are served through redis.
 
 ## Getting Started
 
@@ -10,7 +10,11 @@ Oxford Dictionary API key: Register on [Oxford Dictionaries API site](https://de
 
 ### Installing
 
-Run the following command after downloading or cloning this repo:
+#### Setup redis
+
+`define` requies Redis. Instructions for installing redis are mentioned [here](https://redis.io/download#installation). The host and port of your redis instance must be mentioned in `conf.json`. 
+
+Now run the following command after downloading or cloning this repo:
 
 ```
 npm install -g
