@@ -1,7 +1,11 @@
 {
-    "baseUrl": "https://od-api.oxforddictionaries.com/api/v1/entries/en/",
+    "basePath": "https://od-api.oxforddictionaries.com/api/v1/entries/en/",
     "appHeaders": {
         "key":  "xxxx",
         "id": "xxxx"
+    },
+    "redis": {
+         "host": "127.0.0.1",
+         "port": 6379
     }
 }
