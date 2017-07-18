@@ -15,11 +15,15 @@ if(!word) {
 }
 
 const Redis = require("redis");
-const redis = Redis.createClient();
+const redis = Redis.createClient({
+               "host": config.redis.host,
+               "port": config.redis.port
+              });
 
 wordExistsRedis(word, (error, result) => {
    if(error){
-        
+       print("Some problem with redis server", error);
+       redis.quit();
    }
    else{
        if(result === null){
@@ -54,7 +58,7 @@ function requestWordInfo(word){
 
     const options = { 
       "method": "GET",
-      "url": config.baseUrl + word,
+      "url": config.basePath + word,
       "headers": { 
          "app_key": config.appHeaders.key,
          "app_id": config.appHeaders.id 
@@ -99,7 +103,7 @@ function requestSynsAnts(word, callback){
 
 		const options = { 
      "method": "GET",
-     "url": config.baseUrl + word + "/synonyms;antonyms",
+     "url": config.basePath + word + "/synonyms;antonyms",
      "headers": { 
         "app_key": config.appHeaders.key,
         "app_id": config.appHeaders.id 
