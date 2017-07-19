@@ -13,5 +13,9 @@
   },
   "devDependencies": {
     "eslint": "^4.2.0"
+  },
+  "dependencies": {
+    "redis": "^2.7.1",
+    "require": "^2.4.20"
   }
 }
