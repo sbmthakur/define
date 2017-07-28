@@ -2,10 +2,14 @@
 
 const request = require("request");
 const config = require("./conf.json");
+
+//Just a wrapper around "console.log", "print" prints two
+//strings with a line break
 const print = function(someString, result){ 
     return console.log("\n" + someString, result || "");
 };
 
+//Get the word as a command line argument
 const word = process.argv[2];
 
 if(!word) {
@@ -14,6 +18,7 @@ if(!word) {
     return;
 }
 
+//Connect to Redis
 const Redis = require("redis");
 const redis = Redis.createClient({
     "host": config.redis.host,
