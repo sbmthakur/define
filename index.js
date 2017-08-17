@@ -10,7 +10,7 @@ const print = function(someString, result){
 };
 
 //Get the word as a command line argument
-const word = process.argv[2];
+const word = process.argv[2].toLowerCase();
 
 if(!word) {
 
