@@ -80,7 +80,13 @@ function requestWordInfo(word){
               return print("Some problem with API server"); 
         }
         let redisData = JSON.parse(body); 
-        printWordData(redisData, () => {
+        printWordData(redisData, (exception) => {
+
+            if(exception){
+
+                return redis.quit();
+            }
+
             requestSynsAnts(word, (err, wordData) => {
     
                 let synonyms = wordData.synonyms.replace(/, $/,"");
@@ -178,10 +184,18 @@ function storeDataRedis(word, redisData, callback){
 
 function printWordData(wordData, callback){
 
+    let exception;
     print("You asked for: ", wordData.results[0].id);
     wordData.results[0].lexicalEntries.map(wordInfo => {
         print(wordInfo.lexicalCategory);
-        print("Meaning: ", wordInfo.entries[0].senses[0].definitions[0]);
+        try {
+
+            print("Meaning: ", wordInfo.entries[0].senses[0].definitions[0]);
+        }
+        catch(err) {
+
+            exception = err;
+        }
         try{
          
             print("Example: ", wordInfo.entries[0].senses[0].examples[0].text);
@@ -191,6 +205,16 @@ function printWordData(wordData, callback){
         }
 
     });
-    callback();
+
+    if(exception) {
+
+        print("Cannot cache in redis as the data is in inconsistent format");
+        callback(exception);
+    }
+
+    else {
+
+        callback();
+    }
 }
 
