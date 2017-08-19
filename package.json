@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Shubham Thakur",
-  "license": "ISC",
+  "license": "MIT",
   "bin": {
     "define": "./index.js"
   },
