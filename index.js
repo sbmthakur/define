@@ -1,3 +1,4 @@
+/*
 #!/usr/bin/env node
 
 const request = require("request");
@@ -190,4 +191,73 @@ function printWordData(wordData, callback) {
     } else {
         callback();
     }
+}
+*/
+
+const axios = require('axios');
+const config = require('./conf.json');
+
+(async () => {
+
+    const print = function (someString, result) {
+        return console.log("\n" + someString, result || "");
+    };
+
+    const word = process.argv[2].toLowerCase();
+    await requestWordInfo(word);
+})()
+
+
+async function requestWordInfo(word) {
+
+    let url = `${config.basePath}${word}?strictMatch=false`;
+    const options = {
+        "method": "GET",
+        "url": url,
+        "headers": {
+            "app_key": config.appHeaders.key,
+            "app_id": config.appHeaders.id
+        }
+    };
+
+    let response = await axios(options);
+    console.log(response.data)
+    /*
+    request(options, function(error, response, body) {
+        if (error) throw new Error(error);
+
+        if (response.statusCode !== 200) {
+            redis.quit();
+            if (response.statusCode === 404)
+                return print("This word doesn't exist in oxford dictionary");
+            else
+                return print("Some problem with API server");
+        }
+        let redisData = JSON.parse(body);
+        printWordData(redisData, (exception) => {
+
+            if (exception) {
+                return redis.quit();
+            }
+
+            requestSynsAnts(word, (err, wordData) => {
+                let synonyms = wordData.synonyms.replace(/, $/, "");
+                let antonyms = wordData.antonyms.replace(/, $/, "");
+                print("Synonyms: ", synonyms);
+                print("Antonyms: ", antonyms);
+                redisData["synonyms"] = synonyms;
+                redisData["antonyms"] = antonyms;
+
+                storeDataRedis(word, JSON.stringify(redisData), (err, res) => {
+                    if (err) {
+                        print("Couldn't store this word in redis", err);
+                    } else {
+                        print("Word data added to cache");
+                    }
+                    redis.quit();
+                });
+            });
+        });
+    });
+    */
 }
