@@ -8,7 +8,11 @@
   "parserOptions": {
     "ecmaVersion": 8
   },
+  "globals": {
+    "process": true
+  },
   "rules": {
+    "no-console": "off",
     "indent": [
       "error",
       2
