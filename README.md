@@ -2,6 +2,8 @@
 
 Fetch a word's meaning and usage through Oxford Dictionaries API. Once fetched, the word data is stored in Redis and future queries for the same word are served through Redis.
 
+**Note:** Caching is not permitted as per the rules. Please read the [FAQ](https://developer.oxforddictionaries.com/faq#caching) before running `define`.
+
 ## Getting Started
 
 ### Prerequisites
